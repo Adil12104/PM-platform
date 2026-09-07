@@ -1,0 +1,26 @@
+# Runs PostgreSQL only. The backend (FastAPI/uvicorn) and frontend (Vite)
+# are meant to run natively on your machine for fast reload during
+# development — see the root README for those commands. This just gives
+# you a one-command way to get Postgres running without installing it
+# system-wide, matching the DATABASE_URL already in backend/.env.example.
+services:
+  postgres:
+    image: postgres:16
+    container_name: pm-platform-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pm_user
+      POSTGRES_PASSWORD: pm_password
+      POSTGRES_DB: pm_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - pm_platform_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pm_user -d pm_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pm_platform_pgdata:
